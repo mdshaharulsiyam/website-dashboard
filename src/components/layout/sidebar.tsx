@@ -17,6 +17,7 @@ type NavItem = {
   icon: LucideIcon;
   module: string;
   exact?: boolean;
+  superAdminOnly?: boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
@@ -36,6 +37,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Notifications", href: "/notifications", icon: Bell, module: "Notifications" },
   { label: "FAQs", href: "/faqs", icon: CircleHelp, module: "Settings" },
   { label: "Settings", href: "/settings", icon: Settings, module: "Settings" },
+  { label: "Make Admin", href: "/make-admin", icon: Users, module: "Settings", superAdminOnly: true },
 ];
 
 export function Sidebar() {
@@ -80,7 +82,8 @@ export function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-          {NAV_ITEMS.map(({ label, href, icon: Icon, module, exact }) => {
+          {NAV_ITEMS.map(({ label, href, icon: Icon, module, exact, superAdminOnly }) => {
+            if (superAdminOnly && currentUser?.role !== "SUPER_ADMIN") return null;
             if (!hasPermission(module)) return null;
             const isActive = exact ? pathname === href : pathname === href || pathname.startsWith(href + "/");
             return (

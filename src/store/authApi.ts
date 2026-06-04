@@ -106,6 +106,50 @@ export const authApi = baseApi.injectEndpoints({
         headers: { Authorization: `Bearer ${resetToken}` },
       }),
     }),
+
+    createAdmin: builder.mutation<
+      { success: boolean; message: string; data: any },
+      { name: string; email: string; password: string; confirm_password: string }
+    >({
+      query: (body) => ({
+        url: "auth/create-admin",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Auth"], // Or you can add an "Admins" tag later
+    }),
+
+    getAllAdmins: builder.query<{ success: boolean; data: AuthUser[]; total: number }, { search?: string; status?: string } | void>({
+      query: (params) => {
+        let qs = "";
+        if (params) {
+          const paramsList = [];
+          if (params.search) paramsList.push(`search=${params.search}`);
+          if (params.status) paramsList.push(`status=${params.status}`);
+          if (paramsList.length > 0) qs = `?${paramsList.join("&")}`;
+        }
+        return `auth/get-all-admins${qs}`;
+      },
+      providesTags: ["Auth"],
+    }),
+
+    changeRole: builder.mutation<{ success: boolean; message: string; data: any }, { id: string; role: string }>({
+      query: ({ id, role }) => ({
+        url: `auth/change-role/${id}`,
+        method: "PATCH",
+        body: { role },
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+
+    deleteAdmin: builder.mutation<{ success: boolean; message: string; data: any }, { id: string }>({
+      query: ({ id }) => ({
+        url: `auth/delete-admin/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+    
   }),
   overrideExisting: false,
 });
@@ -119,4 +163,8 @@ export const {
   useSendVerificationCodeMutation,
   useVerifyCodeMutation,
   useResetPasswordMutation,
+  useCreateAdminMutation,
+  useGetAllAdminsQuery,
+  useChangeRoleMutation,
+  useDeleteAdminMutation,
 } = authApi;

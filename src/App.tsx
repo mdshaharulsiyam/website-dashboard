@@ -32,6 +32,7 @@ import AnalyticsPage from "@/pages/analytics/AnalyticsPage";
 import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import FaqPage from "@/pages/faq/FaqPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
+import MakeAdminPage from "@/pages/settings/MakeAdminPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 export default function App() {
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/faqs" element={<FaqPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/make-admin" element={<MakeAdminPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
