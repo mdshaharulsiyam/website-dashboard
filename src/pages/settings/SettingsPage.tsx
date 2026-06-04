@@ -682,11 +682,14 @@ export default function SettingsPage() {
               </div>
               <div>
                 <Label className="mb-1 block">Affiliate Policy</Label>
-                <Textarea
-                  value={webForm.affiliate_policy}
-                  onChange={(event) => updateField("affiliate_policy", event.target.value)}
-                  rows={3}
-                />
+                <div className="rounded-md border border-slate-200">
+                  <RichTextEditor
+                    id="affiliate-policy-editor"
+                    value={webForm.affiliate_policy}
+                    onChange={(val) => updateField("affiliate_policy", val)}
+                    placeholder="Enter affiliate policy terms..."
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
