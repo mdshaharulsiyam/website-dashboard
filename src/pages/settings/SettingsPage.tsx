@@ -73,6 +73,8 @@ type WebFormState = {
   };
   delivery_and_returns: string;
   confirm_order_text: string;
+  affiliate_percentage: string;
+  affiliate_policy: string;
 };
 
 type ContentFormState = Record<SettingPageName, string>;
@@ -148,6 +150,8 @@ const EMPTY_WEB_FORM: WebFormState = {
   },
   delivery_and_returns: "",
   confirm_order_text: "",
+  affiliate_percentage: "4",
+  affiliate_policy: "",
 };
 
 const EMPTY_CONTENT_FORM = SETTING_PAGE_NAMES.reduce((acc, name) => {
@@ -229,6 +233,8 @@ export default function SettingsPage() {
       },
       delivery_and_returns: String(settings.delivery_and_returns ?? ""),
       confirm_order_text: String(settings.confirm_order_text ?? ""),
+      affiliate_percentage: String(settings.affiliate_percentage ?? 4),
+      affiliate_policy: String(settings.affiliate_policy ?? ""),
     });
   }, [settings]);
 
@@ -316,6 +322,8 @@ export default function SettingsPage() {
     payload.append("auto_approve_product", String(webForm.auto_approve_product));
     payload.append("vendor_request", String(webForm.vendor_request));
     payload.append("make_admin", String(webForm.make_admin));
+    payload.append("affiliate_percentage", webForm.affiliate_percentage);
+    payload.append("affiliate_policy", webForm.affiliate_policy);
 
     if (logoFile) payload.append("logo", logoFile);
     if (faviconFile) payload.append("favicon", faviconFile);
@@ -661,6 +669,22 @@ export default function SettingsPage() {
                 <Textarea
                   value={webForm.confirm_order_text}
                   onChange={(event) => updateField("confirm_order_text", event.target.value)}
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label className="mb-1 block">Affiliate Percentage (%)</Label>
+                <Input
+                  type="number"
+                  value={webForm.affiliate_percentage}
+                  onChange={(event) => updateField("affiliate_percentage", event.target.value)}
+                />
+              </div>
+              <div>
+                <Label className="mb-1 block">Affiliate Policy</Label>
+                <Textarea
+                  value={webForm.affiliate_policy}
+                  onChange={(event) => updateField("affiliate_policy", event.target.value)}
                   rows={3}
                 />
               </div>

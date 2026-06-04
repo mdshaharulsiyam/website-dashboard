@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { type ColumnDef } from "@tanstack/react-table";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, CheckCircle, XCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { DataTable } from "@/components/shared/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -17,10 +17,13 @@ export default function AffiliateReferralsPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "Pending" | "Approved" | "Refunded">("all");
   const [actionTarget, setActionTarget] = useState<{ id: string; status: "Approved" | "Refunded" } | null>(null);
 
-  const { data, isLoading, isError, refetch } = useGetAdminReferralOrdersQuery();
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading, isError, refetch } = useGetAdminReferralOrdersQuery({ page, limit: 20 });
   const [updateStatus, { isLoading: isUpdating }] = useUpdateReferralOrderStatusMutation();
 
   const referrals = data?.data || [];
+  const pagination = data?.pagination;
 
   const filtered = referrals.filter((ref: any) => {
     const q = search.trim().toLowerCase();
@@ -159,7 +162,7 @@ export default function AffiliateReferralsPage() {
           </SelectContent>
         </Select>
         {(search || statusFilter !== "all") && (
-          <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setStatusFilter("all"); }}>
+          <Button variant="ghost" size="sm" onClick={() => { setSearch(""); setStatusFilter("all"); setPage(1); }}>
             Clear
           </Button>
         )}
@@ -181,6 +184,32 @@ export default function AffiliateReferralsPage() {
           emptyTitle={search ? "No referrals match your search" : "No referrals yet"}
           pageSize={20}
         />
+      )}
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between pt-2">
+          <p className="text-sm text-slate-500">
+            Page {pagination.page} of {pagination.totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+              disabled={page === pagination.totalPages}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       )}
 
       <ConfirmDialog
