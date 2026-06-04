@@ -33,6 +33,8 @@ import NotificationsPage from "@/pages/notifications/NotificationsPage";
 import FaqPage from "@/pages/faq/FaqPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 import MakeAdminPage from "@/pages/settings/MakeAdminPage";
+import AffiliateReferralsPage from "@/pages/affiliate/AffiliateReferralsPage";
+import AffiliateWithdrawalsPage from "@/pages/affiliate/AffiliateWithdrawalsPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
 export default function App() {
@@ -71,6 +73,8 @@ export default function App() {
             <Route path="/faqs" element={<FaqPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/make-admin" element={<MakeAdminPage />} />
+            <Route path="/affiliates/referrals" element={<AffiliateReferralsPage />} />
+            <Route path="/affiliates/withdrawals" element={<AffiliateWithdrawalsPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
