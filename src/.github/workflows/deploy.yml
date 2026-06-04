@@ -1,0 +1,121 @@
+name: Deploy LooksBee Dashboard
+
+on:
+  push:
+    branches:
+      - main 
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  APP_DIR: applications/looksbee-dashboard
+  APP_PORT: 5001
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install build dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Create deploy bundle
+        run: |
+          set -euo pipefail
+          mkdir -p deploy-bundle
+          cp -r dist deploy-bundle/dist
+          cp index.js deploy-bundle/index.js
+          tar -czf deploy-bundle.tar.gz -C deploy-bundle .
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Upload bundle to AWS
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          ssh "$SERVER_USER@$SERVER_HOST" "mkdir -p ~/$APP_DIR"
+          scp deploy-bundle.tar.gz "$SERVER_USER@$SERVER_HOST:~/$APP_DIR/deploy-bundle.tar.gz"
+
+      - name: Install Express and restart app
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          ssh "$SERVER_USER@$SERVER_HOST" "APP_DIR='$APP_DIR' APP_PORT='$APP_PORT' bash -s" <<'REMOTE'
+          set -euo pipefail
+
+          APP_PATH="$HOME/$APP_DIR"
+          CURRENT_PATH="$APP_PATH/current"
+
+          command -v node >/dev/null 2>&1 || { echo "Node.js is not installed on the AWS server."; exit 1; }
+          command -v npm >/dev/null 2>&1 || { echo "npm is not installed on the AWS server."; exit 1; }
+
+          mkdir -p "$APP_PATH"
+
+          if [ -f "$APP_PATH/app.pid" ] && kill -0 "$(cat "$APP_PATH/app.pid")" 2>/dev/null; then
+            echo "Stopping old app process..."
+            kill "$(cat "$APP_PATH/app.pid")"
+            sleep 2
+          fi
+
+          rm -rf "$CURRENT_PATH"
+          mkdir -p "$CURRENT_PATH"
+          tar -xzf "$APP_PATH/deploy-bundle.tar.gz" -C "$CURRENT_PATH"
+
+          cd "$CURRENT_PATH"
+
+          cat > package.json <<'JSON'
+          {
+            "name": "looksbee-dashboard-server",
+            "private": true,
+            "scripts": {
+              "start": "node index.js"
+            },
+            "dependencies": {
+              "express": "^5.2.1"
+            }
+          }
+          JSON
+
+          npm install --omit=dev --no-audit --no-fund
+
+          echo "Starting app on port $APP_PORT..."
+          PORT="$APP_PORT" nohup node index.js > "$APP_PATH/app.log" 2>&1 &
+          echo $! > "$APP_PATH/app.pid"
+
+          sleep 3
+
+          if kill -0 "$(cat "$APP_PATH/app.pid")" 2>/dev/null; then
+            echo "App is running. PID: $(cat "$APP_PATH/app.pid")"
+          else
+            echo "App failed to start. Recent logs:"
+            tail -n 100 "$APP_PATH/app.log"
+            exit 1
+          fi
+          REMOTE
