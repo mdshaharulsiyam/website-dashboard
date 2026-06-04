@@ -40,6 +40,7 @@ export const baseApi = createApi({
     "Notifications",
     "Cart",
     "ShippingAddress",
+    "Affiliate"
   ],
   endpoints: () => ({}),
 });
