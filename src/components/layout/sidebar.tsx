@@ -3,7 +3,7 @@ import {
   type LucideIcon,
   LayoutDashboard, ShoppingBag, Package, Warehouse, Users, Heart,
   FolderOpen, Tag, Store, MessageSquare, Star, BarChart3, Bell,
-  Settings, ChevronRight, X, LogOut, Hexagon, ImageIcon, CircleHelp,
+  Settings, ChevronRight, X, LogOut, Hexagon, ImageIcon, CircleHelp, MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore, useAuthStore } from "@/store";
@@ -36,6 +36,7 @@ const NAV_ITEMS: NavItem[] = [
   // { label: "Analytics", href: "/analytics", icon: BarChart3, module: "Analytics" },
   { label: "Notifications", href: "/notifications", icon: Bell, module: "Notifications" },
   { label: "FAQs", href: "/faqs", icon: CircleHelp, module: "Settings" },
+  { label: "Locations", href: "/locations", icon: MapPin, module: "Settings" },
   { label: "Settings", href: "/settings", icon: Settings, module: "Settings" },
   { label: "Make Admin", href: "/make-admin", icon: Users, module: "Settings", superAdminOnly: true },
 ];
