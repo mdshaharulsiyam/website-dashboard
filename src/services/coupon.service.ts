@@ -6,6 +6,7 @@ export interface ApiCoupon {
   percentage: number;
   total_available: number;
   max_discount?: number;
+  min_spend?: number;
   coupon_type: "product" | "all";
   createdAt?: string;
   updatedAt?: string;
@@ -35,6 +36,7 @@ export const couponService = {
     percentage: number;
     total_available: number;
     max_discount?: number;
+    min_spend?: number;
     coupon_type: "product" | "all";
   }): Promise<{ message: string; data: ApiCoupon }> => {
     const { data } = await apiClient.post("/coupon/create", payload);

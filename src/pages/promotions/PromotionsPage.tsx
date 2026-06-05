@@ -33,6 +33,7 @@ export default function PromotionsPage() {
     percentage: 10,
     total_available: 100,
     max_discount: undefined as number | undefined,
+    min_spend: 0,
     coupon_type: "all" as "all" | "product",
   });
 
@@ -43,7 +44,7 @@ export default function PromotionsPage() {
     if (form.percentage <= 0 || form.percentage > 100) { toast.error("Percentage must be 1–100"); return; }
     await createMut.mutateAsync(form);
     setDialog(false);
-    setForm({ name: generateCode(), percentage: 10, total_available: 100, max_discount: undefined, coupon_type: "all" });
+    setForm({ name: generateCode(), percentage: 10, total_available: 100, max_discount: undefined, min_spend: 0, coupon_type: "all" });
   }
 
   const columns: ColumnDef<ApiCoupon>[] = [
@@ -193,6 +194,15 @@ export default function PromotionsPage() {
                   min={1}
                   value={form.total_available}
                   onChange={(e) => setForm((p) => ({ ...p, total_available: Number(e.target.value) }))}
+                />
+              </div>
+              <div>
+                <Label className="mb-1 block">Min Spend (৳)</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.min_spend}
+                  onChange={(e) => setForm((p) => ({ ...p, min_spend: Number(e.target.value) }))}
                 />
               </div>
               <div>
