@@ -15,6 +15,7 @@ export interface ApiProduct {
   size?: string[];
   color?: string[];
   gender?: string;
+  weight?: string;
   flag: string;
   total_sold?: number;
   coupon?: { available: boolean; coupon_code?: string };

@@ -48,6 +48,7 @@ export default function NewProductPage() {
   const [stock, setStock] = useState("");
   const [flag, setFlag] = useState<Flag>("new");
   const [gender, setGender] = useState("");
+  const [weight, setWeight] = useState("");
   const [sizeInput, setSizeInput] = useState("");
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
@@ -128,6 +129,7 @@ export default function NewProductPage() {
     fd.append("stock", stock);
     fd.append("flag", flag);
     if (gender.trim()) fd.append("gender", gender.trim());
+    if (weight.trim()) fd.append("weight", weight.trim());
     if (sizes.length > 0) fd.append("size", JSON.stringify(sizes));
     if (colors.length > 0) fd.append("color", JSON.stringify(colors));
     if (tags.length > 0) fd.append("tag", JSON.stringify(tags));
@@ -280,6 +282,10 @@ export default function NewProductPage() {
                         <SelectItem value="others">Others</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div>
+                    <Label className="mb-1.5 block">Weight</Label>
+                    <Input value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="e.g. 1 kg, 500g" />
                   </div>
                   <div>
                     <Label className="mb-1.5 block">Flag</Label>

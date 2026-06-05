@@ -60,6 +60,7 @@ export default function EditProductPage() {
   const [stock, setStock] = useState("");
   const [flag, setFlag] = useState<Flag>("new");
   const [gender, setGender] = useState("");
+  const [weight, setWeight] = useState("");
   const [sizeInput, setSizeInput] = useState("");
   const [sizes, setSizes] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
@@ -96,6 +97,7 @@ export default function EditProductPage() {
       setFlag(product.flag as Flag);
     }
     setGender(product.gender?.toLowerCase() ?? "");
+    setWeight(product.weight ?? "");
 
     const sz = product.size ?? [];
     setSizes(sz);
@@ -200,6 +202,7 @@ export default function EditProductPage() {
     if (stock) fd.append("stock", stock);
     fd.append("flag", flag);
     if (gender) fd.append("gender", gender);
+    if (weight.trim()) fd.append("weight", weight.trim());
     if (sizes.length > 0) fd.append("size", JSON.stringify(sizes));
     if (colors.length > 0) fd.append("color", JSON.stringify(colors));
     if (tags.length > 0) fd.append("tag", JSON.stringify(tags));
@@ -377,6 +380,14 @@ export default function EditProductPage() {
                       <Option value="female">Female</Option>
                       <Option value="others">Others</Option>
                     </Select>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-sm font-medium">Weight</label>
+                    <Input
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      placeholder="e.g. 1 kg, 500g"
+                    />
                   </div>
                   <div>
                     <label className="mb-1.5 block text-sm font-medium">Flag</label>
